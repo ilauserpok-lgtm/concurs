@@ -1,0 +1,1223 @@
+﻿<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>🛡️ Киберщит — интерактивное пособие</title>
+
+<style>
+/* ==================================================================
+   1. ОБЩИЕ СТИЛИ И ПЕРЕМЕННЫЕ
+   ================================================================== */
+*, *::before, *::after { box-sizing: border-box; }
+
+:root{
+  --indigo:#4f46e5;
+  --violet:#7c3aed;
+  --pink:#ec4899;
+  --green:#22c55e;
+  --red:#ef4444;
+  --amber:#f59e0b;
+  --ink:#1e293b;
+  --muted:#64748b;
+}
+
+body{
+  margin:0;
+  padding:18px 14px 48px;
+  min-height:100vh;
+  font-family:"Segoe UI","Trebuchet MS",Verdana,system-ui,sans-serif;
+  font-size:18px;               /* крупный, читаемый шрифт */
+  line-height:1.55;
+  color:var(--ink);
+  background:linear-gradient(135deg,#1e1b4b 0%,#4c1d95 45%,#831843 100%);
+  background-attachment:fixed;
+}
+
+.app{ max-width:1000px; margin:0 auto; }
+
+/* ---------- Шапка ---------- */
+.hero{ text-align:center; color:#fff; padding:8px 0 20px; }
+.hero h1{
+  margin:0;
+  font-size:clamp(2rem,7vw,3.2rem);
+  letter-spacing:1px;
+  text-shadow:0 8px 22px rgba(0,0,0,.5);
+}
+.hero p{ margin:6px 0 0; font-size:clamp(.95rem,3vw,1.15rem); opacity:.92; }
+
+/* ---------- Вкладки ---------- */
+.tabs{ display:flex; flex-wrap:wrap; gap:10px; justify-content:center; margin-bottom:20px; }
+.tab-btn{
+  font-family:inherit;
+  font-size:1rem;
+  font-weight:700;
+  padding:10px 18px;
+  border-radius:999px;
+  border:2px solid rgba(255,255,255,.45);
+  background:rgba(255,255,255,.14);
+  color:#fff;
+  cursor:pointer;
+  transition:transform .2s, background .2s, color .2s, box-shadow .2s;
+}
+.tab-btn:hover{ transform:translateY(-3px); background:rgba(255,255,255,.3); }
+.tab-btn.active{
+  background:#fff;
+  color:var(--violet);
+  border-color:#fff;
+  box-shadow:0 10px 24px rgba(0,0,0,.32);
+}
+
+/* ---------- Панели (содержимое вкладок) ---------- */
+.panel{
+  display:none;
+  background:rgba(255,255,255,.97);
+  border-radius:26px;
+  padding:24px;
+  box-shadow:0 20px 50px rgba(0,0,0,.4);
+}
+.panel.active{ display:block; animation:fadeUp .45s ease; }
+
+@keyframes fadeUp{
+  from{ opacity:0; transform:translateY(20px); }
+  to  { opacity:1; transform:none; }
+}
+
+/* ---------- Заголовки ---------- */
+.section-title{
+  margin:0 0 8px;
+  font-size:clamp(1.3rem,4.5vw,1.7rem);
+  background:linear-gradient(135deg,var(--indigo),var(--pink));
+  -webkit-background-clip:text;
+  background-clip:text;
+  color:transparent;
+}
+.sub-title{
+  margin:26px 0 10px;
+  font-size:1.2rem;
+  color:var(--violet);
+  border-left:6px solid var(--pink);
+  padding-left:10px;
+}
+.lead{ margin:0 0 6px; color:#334155; }
+
+/* ---------- Карточки теории ---------- */
+.cards{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+  gap:14px;
+  margin-top:14px;
+}
+.card{
+  border-radius:20px;
+  padding:16px 18px;
+  background:linear-gradient(160deg,#eef2ff,#fdf2f8);
+  border:2px solid #e0e7ff;
+  box-shadow:0 6px 16px rgba(79,70,229,.12);
+  transition:transform .22s, box-shadow .22s;
+}
+.card:hover{ transform:translateY(-5px); box-shadow:0 16px 30px rgba(79,70,229,.22); }
+.card h3{ margin:0 0 8px; font-size:1.12rem; color:#4c1d95; }
+.card p{ margin:0 0 8px; }
+.card ul{ margin:8px 0 0; padding-left:20px; }
+.card li{ margin-bottom:4px; }
+
+/* ---------- Блок «Запомни» ---------- */
+.tip{
+  margin-top:18px;
+  padding:14px 18px;
+  border-radius:16px;
+  border-left:8px solid var(--amber);
+  background:linear-gradient(135deg,#fef3c7,#fde68a);
+  font-weight:600;
+}
+
+/* ---------- Кнопки ---------- */
+.btn{
+  font-family:inherit;
+  font-size:1rem;
+  font-weight:700;
+  border:none;
+  border-radius:999px;
+  padding:11px 22px;
+  cursor:pointer;
+  color:#fff;
+  background:linear-gradient(135deg,#6366f1,#a855f7);
+  box-shadow:0 8px 18px rgba(99,102,241,.35);
+  transition:transform .18s, box-shadow .18s, filter .18s;
+}
+.btn:hover{ transform:translateY(-2px); box-shadow:0 12px 24px rgba(99,102,241,.45); }
+.btn:active{ transform:translateY(0); }
+.btn.green { background:linear-gradient(135deg,#22c55e,#16a34a); box-shadow:0 8px 18px rgba(34,197,94,.35); }
+.btn.orange{ background:linear-gradient(135deg,#f59e0b,#f97316); box-shadow:0 8px 18px rgba(245,158,11,.35); }
+.btn.gray  { background:linear-gradient(135deg,#94a3b8,#64748b); box-shadow:0 8px 18px rgba(100,116,139,.3); }
+.btn-row{ display:flex; flex-wrap:wrap; gap:10px; margin-top:14px; }
+
+/* ---------- Упражнение 1: выбор ответа ---------- */
+.q-card{
+  border-radius:20px;
+  padding:16px;
+  background:#f8fafc;
+  border:2px solid #e2e8f0;
+  margin-bottom:14px;
+}
+.q-title{ margin:0 0 10px; font-weight:700; }
+.options{ display:flex; flex-direction:column; gap:8px; }
+.option{
+  font-family:inherit;
+  font-size:1rem;
+  text-align:left;
+  padding:11px 14px;
+  border-radius:14px;
+  border:2px solid #c7d2fe;
+  background:#fff;
+  cursor:pointer;
+  transition:background .18s, transform .18s, border-color .18s;
+}
+.option:hover:not(:disabled){ background:#eef2ff; transform:translateX(4px); }
+.option:disabled{ cursor:default; }
+.option.correct{ background:#dcfce7; border-color:var(--green); color:#14532d; font-weight:700; }
+.option.wrong  { background:#fee2e2; border-color:var(--red);   color:#7f1d1d; font-weight:700; }
+
+.feedback{ margin-top:10px; padding:10px 12px; border-radius:12px; font-weight:600; }
+.feedback.ok { background:#dcfce7; color:#166534; }
+.feedback.bad{ background:#fee2e2; color:#991b1b; }
+
+/* ---------- Упражнение 2: соотнесение ---------- */
+.match-wrap{ display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+.match-col{ display:flex; flex-direction:column; gap:10px; }
+.match-item{
+  font-family:inherit;
+  font-size:1rem;
+  text-align:left;
+  padding:12px;
+  border-radius:16px;
+  border:2px dashed #a5b4fc;
+  background:#fff;
+  cursor:pointer;
+  transition:background .2s, border-color .2s, transform .2s;
+}
+.match-item.term{
+  background:linear-gradient(135deg,#eef2ff,#e0e7ff);
+  border-style:solid;
+  font-weight:700;
+  color:#3730a3;
+}
+.match-item:hover:not(.matched){ transform:scale(1.02); }
+.match-item.selected{ border-color:var(--violet); box-shadow:0 0 0 4px rgba(124,58,237,.25); }
+.match-item.matched{ background:#dcfce7; border-color:var(--green); color:#14532d; cursor:default; }
+.match-item.error{ border-color:var(--red); background:#fee2e2; animation:shake .4s; }
+
+@keyframes shake{
+  0%,100%{ transform:translateX(0); }
+  25%{ transform:translateX(-7px); }
+  75%{ transform:translateX(7px); }
+}
+
+/* ---------- Упражнение 3: пропуски ---------- */
+.fill-sentence{ margin-bottom:14px; }
+.fill-input{
+  font-family:inherit;
+  font-size:1rem;
+  padding:8px 12px;
+  width:200px;
+  max-width:100%;
+  border-radius:12px;
+  border:2px solid #c7d2fe;
+  outline:none;
+  transition:border-color .2s, box-shadow .2s, background .2s;
+}
+.fill-input:focus{ border-color:var(--violet); box-shadow:0 0 0 4px rgba(124,58,237,.18); }
+.fill-input.correct{ background:#dcfce7; border-color:var(--green); font-weight:700; }
+.fill-input.wrong  { background:#fee2e2; border-color:var(--red); }
+.fill-input.shown  { background:#fef3c7; border-color:var(--amber); }
+
+.hints{ display:flex; flex-wrap:wrap; gap:8px; margin:10px 0 16px; }
+.hint{
+  background:#ede9fe;
+  color:#5b21b6;
+  border-radius:999px;
+  padding:6px 14px;
+  font-weight:700;
+  font-size:.95rem;
+}
+
+/* ---------- Упражнение 4: верно/неверно ---------- */
+.tf-card{
+  border-radius:20px;
+  padding:16px;
+  background:#f8fafc;
+  border:2px solid #e2e8f0;
+  margin-bottom:14px;
+}
+.tf-card p{ margin:0 0 10px; font-weight:600; }
+.tf-btns{ display:flex; gap:10px; flex-wrap:wrap; }
+.tf-btn{
+  font-family:inherit;
+  font-size:1rem;
+  font-weight:700;
+  padding:9px 20px;
+  border-radius:999px;
+  border:2px solid #c7d2fe;
+  background:#fff;
+  cursor:pointer;
+  transition:.18s;
+}
+.tf-btn:hover:not(:disabled){ background:#eef2ff; transform:translateY(-2px); }
+.tf-btn.correct{ background:#dcfce7; border-color:var(--green); color:#14532d; }
+.tf-btn.wrong  { background:#fee2e2; border-color:var(--red);   color:#7f1d1d; }
+
+/* ---------- Тест ---------- */
+.test-q{
+  border-radius:20px;
+  padding:16px;
+  background:#f8fafc;
+  border:2px solid #e2e8f0;
+  margin-bottom:14px;
+}
+.opt{
+  display:flex;
+  gap:10px;
+  align-items:flex-start;
+  padding:10px 12px;
+  margin-bottom:8px;
+  border-radius:14px;
+  border:2px solid #e2e8f0;
+  background:#fff;
+  cursor:pointer;
+  transition:.18s;
+}
+.opt:hover{ background:#eef2ff; border-color:#c7d2fe; }
+.opt input{ margin-top:4px; transform:scale(1.25); accent-color:var(--violet); cursor:pointer; }
+.opt.correct{ background:#dcfce7; border-color:var(--green); font-weight:700; }
+.opt.wrong  { background:#fee2e2; border-color:var(--red);   font-weight:700; }
+
+.result{
+  display:none;
+  margin-top:18px;
+  padding:20px;
+  border-radius:20px;
+  text-align:center;
+  font-weight:700;
+  font-size:1.15rem;
+  background:linear-gradient(135deg,#eef2ff,#fce7f3);
+  border:3px solid #c7d2fe;
+}
+.result.show{ display:block; animation:fadeUp .4s ease; }
+.result .big{ display:block; font-size:2.2rem; margin-bottom:6px; }
+
+/* ---------- Чек-лист «Итоги» ---------- */
+.bar{ height:18px; border-radius:999px; background:#e2e8f0; overflow:hidden; margin:12px 0 6px; }
+.bar > div{
+  height:100%;
+  width:0;
+  border-radius:999px;
+  background:linear-gradient(90deg,#22c55e,#06b6d4,#8b5cf6);
+  transition:width .4s ease;
+}
+.check-item{
+  display:flex;
+  gap:12px;
+  align-items:flex-start;
+  padding:12px 14px;
+  margin-bottom:10px;
+  border-radius:16px;
+  background:#f8fafc;
+  border:2px solid #e2e8f0;
+  font-weight:600;
+  cursor:pointer;
+  transition:.18s;
+}
+.check-item:hover{ background:#eef2ff; }
+.check-item input{ width:22px; height:22px; margin-top:3px; accent-color:var(--green); cursor:pointer; flex-shrink:0; }
+.check-item.done{ background:#dcfce7; border-color:#86efac; }
+
+/* ---------- Прочее ---------- */
+.status{ font-weight:700; color:var(--violet); margin:10px 0 0; }
+.foot{ text-align:center; color:rgba(255,255,255,.75); font-size:.95rem; margin-top:22px; }
+
+/* ---------- Адаптивность для телефонов ---------- */
+@media (max-width:600px){
+  body{ font-size:16px; padding:12px 10px 36px; }
+  .panel{ padding:16px; border-radius:20px; }
+  .tab-btn{ font-size:.9rem; padding:9px 14px; }
+  .match-item{ font-size:.9rem; padding:10px; }
+  .fill-input{ width:100%; }
+  .btn{ width:100%; text-align:center; }
+  .tf-btn{ flex:1; }
+}
+</style>
+</head>
+
+<body>
+<div class="app">
+
+  <!-- ================= ШАПКА ================= -->
+  <header class="hero">
+    <h1>🛡️ Киберщит</h1>
+    <p>Интерактивное пособие по кибербезопасности</p>
+  </header>
+
+  <!-- ================= ВКЛАДКИ ================= -->
+  <nav class="tabs" id="tabs">
+    <button class="tab-btn active" data-tab="learn">📚 Обучение</button>
+    <button class="tab-btn" data-tab="practice">🎮 Практика</button>
+    <button class="tab-btn" data-tab="test">🏆 Тест</button>
+    <button class="tab-btn" data-tab="facts">💡 Это интересно</button>
+    <button class="tab-btn" data-tab="results">✅ Итоги</button>
+  </nav>
+
+  <main>
+
+    <!-- ============================================================
+         ВКЛАДКА 1. ОБУЧЕНИЕ
+         ============================================================ -->
+    <section class="panel active" id="learn">
+      <h2 class="section-title">📚 Что такое «Киберщит»?</h2>
+      <p class="lead">
+        Киберщит — это твоя личная защита в интернете. Он состоит из простых правил,
+        которые помогают сохранить в тайне пароли, деньги, личные фото и хорошее настроение.
+      </p>
+
+      <div class="cards">
+
+        <div class="card">
+          <h3>🛡️ Кибербезопасность</h3>
+          <p>Это защита устройств, данных и аккаунтов от взлома, кражи и обмана.</p>
+          <p>Три главные цели:</p>
+          <ul>
+            <li><b>Конфиденциальность</b> — никто не читает твоё</li>
+            <li><b>Целостность</b> — никто не меняет твоё</li>
+            <li><b>Доступность</b> — ты можешь пользоваться своим</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <h3>🔑 Пароли</h3>
+          <ul>
+            <li>Длина — <b>от 12 символов</b></li>
+            <li>Заглавные и строчные буквы, цифры, символы</li>
+            <li>Никаких «123456», «qwerty», дат рождения</li>
+            <li>Для каждого сайта — <b>свой</b> пароль</li>
+            <li>Включи двухфакторную аутентификацию</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <h3>🎣 Фишинг</h3>
+          <p>Мошенник притворяется банком, игрой или другом и выманивает пароль, код или деньги.</p>
+          <ul>
+            <li>Пугает: «Срочно! Аккаунт заблокируют!»</li>
+            <li>Странный адрес сайта, ошибки в тексте</li>
+            <li>Просит код из СМС — <b>никому не давай!</b></li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <h3>🕵️ Личные данные</h3>
+          <p>Не публикуй в открытом доступе:</p>
+          <ul>
+            <li>домашний адрес и номер школы</li>
+            <li>телефон и геолокацию</li>
+            <li>фото документов и билетов</li>
+          </ul>
+          <p>Проверь настройки приватности в соцсетях.</p>
+        </div>
+
+        <div class="card">
+          <h3>💻 Защита устройства</h3>
+          <ul>
+            <li>Антивирус и регулярные обновления</li>
+            <li>Скачивай файлы только с проверенных сайтов</li>
+            <li>Проверяй, что адрес начинается с <b>https://</b></li>
+            <li>Не открывай вложения от незнакомцев</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <h3>🤝 Этика в сети</h3>
+          <p>Не оскорбляй и не трави других — за экраном живой человек.</p>
+          <p>Если травят тебя: не отвечай, заблокируй, сохрани скриншоты
+             и обязательно расскажи взрослым.</p>
+        </div>
+
+      </div>
+
+      <div class="tip">
+        ⭐ Запомни «Правило 5 НЕ»: <br>
+        НЕ давай пароль никому · НЕ переходи по странным ссылкам ·
+        НЕ публикуй личные данные · НЕ верь «халяве» ·
+        НЕ молчи, если что-то случилось.
+      </div>
+    </section>
+
+    <!-- ============================================================
+         ВКЛАДКА 2. ПРАКТИКА
+         ============================================================ -->
+    <section class="panel" id="practice">
+      <h2 class="section-title">🎮 Практика</h2>
+      <p class="lead">Четыре упражнения. Ответ проверяется сразу — пробуй, пока не получится!</p>
+
+      <!-- Упражнение 1 -->
+      <h3 class="sub-title">1. Выбери правильный ответ</h3>
+      <div id="quiz-practice"></div>
+      <div class="btn-row">
+        <button class="btn gray" onclick="renderPracticeQuiz()">🔄 Сбросить упражнение</button>
+      </div>
+
+      <!-- Упражнение 2 -->
+      <h3 class="sub-title">2. Соотнеси термин и его значение</h3>
+      <p>Нажми на слово слева, а затем на подходящее описание справа.</p>
+      <div class="match-wrap">
+        <div class="match-col" id="match-left"></div>
+        <div class="match-col" id="match-right"></div>
+      </div>
+      <p class="status" id="match-status">Совпадений найдено: 0 из 4</p>
+      <div class="btn-row">
+        <button class="btn gray" onclick="renderMatch()">🔄 Сбросить упражнение</button>
+      </div>
+
+      <!-- Упражнение 3 -->
+      <h3 class="sub-title">3. Заполни пропуски</h3>
+      <p>Слова-подсказки:</p>
+      <div class="hints" id="fill-hints"></div>
+      <div id="fill-tasks"></div>
+      <p class="status" id="fill-status"></p>
+      <div class="btn-row">
+        <button class="btn green"  onclick="checkFill()">✅ Проверить</button>
+        <button class="btn orange" onclick="showFillAnswers()">💡 Показать ответы</button>
+        <button class="btn gray"   onclick="renderFill()">🔄 Сбросить</button>
+      </div>
+
+      <!-- Упражнение 4 -->
+      <h3 class="sub-title">4. Верно или неверно?</h3>
+      <div id="tf-tasks"></div>
+      <div class="btn-row">
+        <button class="btn gray" onclick="renderTF()">🔄 Сбросить упражнение</button>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         ВКЛАДКА 3. ТЕСТ
+         ============================================================ -->
+    <section class="panel" id="test">
+      <h2 class="section-title">🏆 Итоговый тест</h2>
+      <p class="lead">8 вопросов по 1 баллу. Выбери один вариант ответа в каждом вопросе
+        и нажми «Проверить результат».</p>
+
+      <div id="test-questions"></div>
+
+      <div class="btn-row">
+        <button class="btn green" onclick="checkTest()">✅ Проверить результат</button>
+        <button class="btn gray"  onclick="resetTest()">🔄 Пройти заново</button>
+      </div>
+
+      <div class="result" id="test-result"></div>
+    </section>
+
+    <!-- ============================================================
+         ВКЛАДКА 4. ЭТО ИНТЕРЕСНО
+         ============================================================ -->
+    <section class="panel" id="facts">
+      <h2 class="section-title">💡 Это интересно</h2>
+      <p class="lead">Немного фактов и историй — чтобы понять, насколько серьёзна тема.</p>
+
+      <div class="cards">
+
+        <div class="card">
+          <h3>🐛 Первый вирус (1971 год)</h3>
+          <p>Программа <b>Creeper</b> сама копировала себя по сети и выводила надпись:
+             «I’m the creeper, catch me if you can!» («Я крипер, поймай меня, если сможешь!»).</p>
+          <p>Она ничего не разрушала — просто шутила. Но именно с неё началась история
+             компьютерных вирусов.</p>
+        </div>
+
+        <div class="card">
+          <h3>🔐 Самые популярные пароли мира</h3>
+          <p>Много лет подряд первые места занимают <b>123456</b>, <b>password</b> и <b>qwerty</b>.
+             Такой пароль компьютер подбирает за доли секунды.</p>
+          <p>Хакеры пользуются готовыми списками из миллионов паролей — поэтому
+             «сложный на вид» пароль из словаря тоже опасен.</p>
+        </div>
+
+        <div class="card">
+          <h3>🎭 Хакеры бывают разные</h3>
+          <p><b>«Белые шляпы»</b> ищут уязвимости и сообщают о них компаниям,
+             чтобы те всё починили. Их приглашают на работу и платят за найденные «дыры».</p>
+          <p><b>«Чёрные шляпы»</b> взламывают ради выгоды — это преступление.</p>
+        </div>
+
+        <div class="card">
+          <h3>😀 Первый смайлик (1982 год)</h3>
+          <p>Профессор Скотт Фалман предложил ставить <b>:-)</b> в сообщениях,
+             чтобы было понятно, где шутка. Так родились привычные нам эмодзи.</p>
+        </div>
+
+        <div class="card">
+          <h3>📱 Двухфакторная аутентификация</h3>
+          <p>Даже если мошенник украл твой пароль, без второго кода (из СМС или приложения)
+             он не войдёт в аккаунт. Это как вторая дверь в доме.</p>
+        </div>
+
+        <div class="card">
+          <h3>🌍 Интернет помнит всё</h3>
+          <p>Удалённое фото может остаться в копиях, кэше и у других людей.
+             Прежде чем публиковать — подумай: «А не пожалею ли я через год?»</p>
+        </div>
+
+        <div class="card">
+          <h3>🏫 Пример из жизни</h3>
+          <p>Школьник увидел в игре сообщение: «Бесплатные алмазы! Перейди по ссылке и введи логин».
+             Он ввёл — и потерял аккаунт, который собирал два года.</p>
+          <p>Бесплатный сыр бывает только в мышеловке. 🧀</p>
+        </div>
+
+        <div class="card">
+          <h3>💼 Профессия будущего</h3>
+          <p>Специалист по кибербезопасности — одна из самых востребованных профессий в мире.
+             Такие люди защищают банки, больницы, школы и целые города от цифровых атак.</p>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ============================================================
+         ВКЛАДКА 5. ИТОГИ
+         ============================================================ -->
+    <section class="panel" id="results">
+      <h2 class="section-title">✅ Мои итоги</h2>
+      <p class="lead">Отметь галочками то, что ты уже делаешь.
+        Чем больше галочек — тем крепче твой киберщит!</p>
+
+      <div class="bar"><div id="check-bar"></div></div>
+      <p class="status" id="check-text">Уровень защиты: 0%</p>
+
+      <div id="checklist"></div>
+
+      <div class="tip" id="check-advice">
+        💪 Начни с самого простого: поставь длинный пароль и включи двухфакторную аутентификацию.
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="foot">Безопасность в сети — это важно! 🔒</footer>
+</div>
+
+<script>
+/* ==================================================================
+   БЛОК 1. ПЕРЕКЛЮЧЕНИЕ ВКЛАДОК
+   ================================================================== */
+document.querySelectorAll('.tab-btn').forEach(function(btn){
+  btn.addEventListener('click', function(){
+    // снять активность со всех кнопок и панелей
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    // включить нужные
+    btn.classList.add('active');
+    document.getElementById(btn.dataset.tab).classList.add('active');
+    window.scrollTo({ top:0, behavior:'smooth' });
+  });
+});
+
+
+/* ==================================================================
+   БЛОК 2. ДАННЫЕ (легко редактировать: меняй тексты и ответы здесь)
+   ================================================================== */
+
+/* --- Упражнение 1: выбор правильного ответа --- */
+const practiceQuiz = [
+  {
+    q: 'Какой пароль самый надёжный?',
+    options: ['123456', 'qwerty', 'Ma#7Lp2!kR9z', 'даша2010'],
+    correct: 2,
+    explain: 'Длинный пароль из разных символов взломать почти невозможно.'
+  },
+  {
+    q: 'Пришло сообщение: «Твой аккаунт заблокирован! Срочно перейди по ссылке и введи пароль». Что делать?',
+    options: [
+      'Перейти и ввести пароль',
+      'Удалить сообщение и не переходить по ссылке',
+      'Ответить и спросить, кто это',
+      'Переслать сообщение другу'
+    ],
+    correct: 1,
+    explain: 'Это классический фишинг. Настоящие сервисы никогда не просят пароль в сообщении.'
+  },
+  {
+    q: 'Что можно безопасно публиковать в открытом профиле?',
+    options: ['Домашний адрес', 'Номер телефона', 'Фото любимого кота', 'Фото паспорта'],
+    correct: 2,
+    explain: 'Фото питомца ничем тебе не навредит, а адрес, телефон и документы — опасны.'
+  }
+];
+
+/* --- Упражнение 2: соотнесение --- */
+const matchPairs = [
+  { term:'Фишинг',                        def:'Сообщения-обманки, которые выманивают пароли и данные' },
+  { term:'Двухфакторная аутентификация',  def:'Вход по паролю плюс дополнительный код из СМС' },
+  { term:'Антивирус',                     def:'Программа, которая находит и удаляет вредоносные файлы' },
+  { term:'Кибербуллинг',                  def:'Травля и оскорбления человека в интернете' }
+];
+
+/* --- Упражнение 3: заполни пропуски --- */
+const fillTasks = [
+  { text:'Сообщения-обманки, которые выманивают пароли и данные, — это ___ .', answer:'фишинг' },
+  { text:'Надёжный ___ должен быть длинным и разным для каждого сайта.',        answer:'пароль' },
+  { text:'Дополнительный код при входе — это двухфакторная ___ .',              answer:'аутентификация' },
+  { text:'Программа, которая находит и удаляет вирусы, — ___ .',                answer:'антивирус' }
+];
+/* Слова-подсказки для упражнения 3 */
+const fillHints = ['пароль', 'фишинг', 'аутентификация', 'антивирус'];
+
+/* --- Упражнение 4: верно / неверно --- */
+const tfTasks = [
+  { text:'Пароль «12345» — надёжный, потому что его легко запомнить.', answer:false,
+    explain:'Такой пароль подбирается мгновенно. Надёжный пароль — длинный и сложный.' },
+  { text:'Перед вводом пароля стоит проверить, что адрес сайта начинается с https://', answer:true,
+    explain:'https:// означает защищённое соединение. Но помни: мошенники тоже иногда делают https.' },
+  { text:'Код из СМС можно сообщать друзьям.', answer:false,
+    explain:'Код из СМС — это ключ от твоего аккаунта. Его нельзя сообщать никому.' },
+  { text:'Если тебя травят в интернете, нужно сохранить доказательства и рассказать взрослым.', answer:true,
+    explain:'Скриншоты помогут, а взрослые — защитят. Молчать в такой ситуации нельзя.' }
+];
+
+/* --- Итоговый тест --- */
+const testQuestions = [
+  {
+    q:'Что такое кибербезопасность?',
+    options:[
+      'Умение быстро печатать на клавиатуре',
+      'Защита устройств, данных и аккаунтов от взлома и обмана',
+      'Компьютерные игры про хакеров',
+      'Программа для монтажа видео'
+    ],
+    correct:1
+  },
+  {
+    q:'Какой пароль самый надёжный?',
+    options:['12345678', 'qwerty123', 'Даша2011', '7K!p2Lm#9q'],
+    correct:3
+  },
+  {
+    q:'Что такое фишинг?',
+    options:[
+      'Рыбалка в интернете',
+      'Обманные сообщения, которые выманивают пароли и данные',
+      'Способ ускорить компьютер',
+      'Вид компьютерной игры'
+    ],
+    correct:1
+  },
+  {
+    q:'Незнакомец в соцсети просит у тебя домашний адрес и фото. Что делать?',
+    options:[
+      'Отправить — вдруг он друг',
+      'Прекратить общение и рассказать родителям',
+      'Отправить фото, но не адрес',
+      'Спросить у него пароль в ответ'
+    ],
+    correct:1
+  },
+  {
+    q:'Двухфакторная аутентификация — это...',
+    options:[
+      'Два пароля от одного аккаунта',
+      'Вход по паролю плюс дополнительный код',
+      'Два антивируса на компьютере',
+      'Вход с двух устройств одновременно'
+    ],
+    correct:1
+  },
+  {
+    q:'Какие данные нельзя выкладывать в открытый профиль?',
+    options:[
+      'Любимый цвет',
+      'Название любимой книги',
+      'Домашний адрес и номер школы',
+      'Фото кота'
+    ],
+    correct:2
+  },
+  {
+    q:'Что поможет защитить компьютер от вирусов?',
+    options:[
+      'Антивирус и регулярные обновления',
+      'Отключённый интернет навсегда',
+      'Скачивание файлов с любых сайтов',
+      'Открытие всех вложений в письмах'
+    ],
+    correct:0
+  },
+  {
+    q:'Друг в мессенджере просит срочно перейти по ссылке и ввести пароль. Что делать?',
+    options:[
+      'Перейти и ввести пароль — он же друг',
+      'Просто игнорировать',
+      'Проверить у друга по телефону, правда ли это он',
+      'Отправить пароль, а потом сменить'
+    ],
+    correct:2
+  }
+];
+
+
+/* ==================================================================
+   БЛОК 3. ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ
+   ================================================================== */
+
+/* Перемешивание массива (для случайного порядка) */
+function shuffle(arr){
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--){
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+/* Приведение ответа к «сравнимому» виду */
+function normalize(str){
+  return String(str).trim().toLowerCase().replace(/ё/g, 'е').replace(/\s+/g, ' ');
+}
+
+
+/* ==================================================================
+   БЛОК 4. УПРАЖНЕНИЕ 1 — ВЫБОР ПРАВИЛЬНОГО ОТВЕТА
+   ================================================================== */
+function renderPracticeQuiz(){
+  const box = document.getElementById('quiz-practice');
+  box.innerHTML = '';
+
+  practiceQuiz.forEach(function(q, qi){
+    const card = document.createElement('div');
+    card.className = 'q-card';
+
+    const title = document.createElement('p');
+    title.className = 'q-title';
+    title.textContent = (qi + 1) + '. ' + q.q;
+    card.appendChild(title);
+
+    const opts = document.createElement('div');
+    opts.className = 'options';
+
+    q.options.forEach(function(text, oi){
+      const b = document.createElement('button');
+      b.className = 'option';
+      b.textContent = text;
+
+      b.addEventListener('click', function(){
+        if (card.dataset.done) return;      // уже отвечали — второй раз нельзя
+        card.dataset.done = '1';
+
+        // подсветить правильный вариант
+        opts.querySelectorAll('.option').forEach(function(x, xi){
+          x.disabled = true;
+          if (xi === q.correct) x.classList.add('correct');
+        });
+        // если ответ неверный — подсветить его красным
+        if (oi !== q.correct) b.classList.add('wrong');
+
+        // добавить пояснение
+        const fb = document.createElement('div');
+        fb.className = 'feedback ' + (oi === q.correct ? 'ok' : 'bad');
+        fb.textContent = (oi === q.correct ? '✅ Верно! ' : '❌ Неверно. ') + q.explain;
+        card.appendChild(fb);
+      });
+
+      opts.appendChild(b);
+    });
+
+    card.appendChild(opts);
+    box.appendChild(card);
+  });
+}
+
+
+/* ==================================================================
+   БЛОК 5. УПРАЖНЕНИЕ 2 — СООТНЕСЕНИЕ
+   ================================================================== */
+let matchSelected = null;   // выбранный элемент (слово или описание)
+let matchFound = 0;         // сколько пар найдено
+
+function renderMatch(){
+  const left  = document.getElementById('match-left');
+  const right = document.getElementById('match-right');
+  left.innerHTML = '';
+  right.innerHTML = '';
+  matchSelected = null;
+  matchFound = 0;
+
+  // Левая колонка — термины по порядку
+  matchPairs.forEach(function(pair, i){
+    const b = document.createElement('button');
+    b.className = 'match-item term';
+    b.textContent = pair.term;
+    b.dataset.index = i;
+    b.dataset.side = 'term';
+    b.addEventListener('click', function(){ onMatchClick(b); });
+    left.appendChild(b);
+  });
+
+  // Правая колонка — определения в случайном порядке
+  shuffle(matchPairs.map((_, i) => i)).forEach(function(i){
+    const b = document.createElement('button');
+    b.className = 'match-item def';
+    b.textContent = matchPairs[i].def;
+    b.dataset.index = i;
+    b.dataset.side = 'def';
+    b.addEventListener('click', function(){ onMatchClick(b); });
+    right.appendChild(b);
+  });
+
+  updateMatchStatus();
+}
+
+function onMatchClick(el){
+  if (el.classList.contains('matched')) return;
+
+  // Первый клик — просто выбираем
+  if (!matchSelected){
+    matchSelected = el;
+    el.classList.add('selected');
+    return;
+  }
+
+  // Клик по тому же элементу — снимаем выбор
+  if (matchSelected === el){
+    el.classList.remove('selected');
+    matchSelected = null;
+    return;
+  }
+
+  // Клик по элементу из той же колонки — переносим выбор
+  if (matchSelected.dataset.side === el.dataset.side){
+    matchSelected.classList.remove('selected');
+    matchSelected = el;
+    el.classList.add('selected');
+    return;
+  }
+
+  // Клик по элементу из другой колонки — проверяем пару
+  const a = matchSelected;
+  matchSelected = null;
+  a.classList.remove('selected');
+
+  if (a.dataset.index === el.dataset.index){
+    // Верно!
+    a.classList.add('matched');
+    el.classList.add('matched');
+    matchFound++;
+    updateMatchStatus();
+  } else {
+    // Ошибка — короткая красная вспышка
+    a.classList.add('error');
+    el.classList.add('error');
+    setTimeout(function(){
+      a.classList.remove('error');
+      el.classList.remove('error');
+    }, 500);
+  }
+}
+
+function updateMatchStatus(){
+  const total = matchPairs.length;
+  const st = document.getElementById('match-status');
+  st.textContent = matchFound === total
+    ? '🎉 Отлично! Все ' + total + ' пары найдены верно!'
+    : 'Совпадений найдено: ' + matchFound + ' из ' + total;
+}
+
+
+/* ==================================================================
+   БЛОК 6. УПРАЖНЕНИЕ 3 — ЗАПОЛНИ ПРОПУСКИ
+   ================================================================== */
+function renderFill(){
+  // Подсказки-слова
+  const hintsBox = document.getElementById('fill-hints');
+  hintsBox.innerHTML = '';
+  fillHints.forEach(function(word){
+    const s = document.createElement('span');
+    s.className = 'hint';
+    s.textContent = word;
+    hintsBox.appendChild(s);
+  });
+
+  // Предложения с полями ввода
+  const box = document.getElementById('fill-tasks');
+  box.innerHTML = '';
+
+  fillTasks.forEach(function(task, i){
+    const div = document.createElement('div');
+    div.className = 'fill-sentence';
+
+    const parts = task.text.split('___');   // разбиваем по пропуску
+
+    div.appendChild(document.createTextNode((i + 1) + '. ' + parts[0]));
+
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.className = 'fill-input';
+    input.placeholder = '…';
+    input.dataset.index = i;
+    div.appendChild(input);
+
+    div.appendChild(document.createTextNode(parts[1] || ''));
+    box.appendChild(div);
+  });
+
+  document.getElementById('fill-status').textContent = '';
+}
+
+function checkFill(){
+  const inputs = document.querySelectorAll('#fill-tasks .fill-input');
+  let correct = 0;
+
+  inputs.forEach(function(inp){
+    const answer = fillTasks[inp.dataset.index].answer;
+    inp.classList.remove('correct', 'wrong', 'shown');
+
+    if (normalize(inp.value) === normalize(answer)){
+      inp.classList.add('correct');
+      correct++;
+    } else {
+      inp.classList.add('wrong');
+    }
+  });
+
+  const st = document.getElementById('fill-status');
+  st.textContent = 'Правильно: ' + correct + ' из ' + inputs.length +
+    (correct === inputs.length ? ' 🎉 Идеально!' : '');
+}
+
+function showFillAnswers(){
+  document.querySelectorAll('#fill-tasks .fill-input').forEach(function(inp){
+    inp.value = fillTasks[inp.dataset.index].answer;
+    inp.classList.remove('correct', 'wrong');
+    inp.classList.add('shown');
+  });
+  document.getElementById('fill-status').textContent = '💡 Ответы показаны. Попробуй сбросить и написать сам!';
+}
+
+
+/* ==================================================================
+   БЛОК 7. УПРАЖНЕНИЕ 4 — ВЕРНО / НЕВЕРНО
+   ================================================================== */
+function renderTF(){
+  const box = document.getElementById('tf-tasks');
+  box.innerHTML = '';
+
+  tfTasks.forEach(function(task, i){
+    const card = document.createElement('div');
+    card.className = 'tf-card';
+
+    const p = document.createElement('p');
+    p.textContent = (i + 1) + '. ' + task.text;
+    card.appendChild(p);
+
+    const btns = document.createElement('div');
+    btns.className = 'tf-btns';
+
+    [['✅ Верно', true], ['❌ Неверно', false]].forEach(function(pair){
+      const b = document.createElement('button');
+      b.className = 'tf-btn';
+      b.textContent = pair[0];
+
+      b.addEventListener('click', function(){
+        if (card.dataset.done) return;
+        card.dataset.done = '1';
+
+        const isRight = (pair[1] === task.answer);
+        b.classList.add(isRight ? 'correct' : 'wrong');
+
+        // показать верный вариант
+        btns.querySelectorAll('.tf-btn').forEach(function(x, xi){
+          x.disabled = true;
+          const val = (xi === 0);              // первая кнопка = «Верно»
+          if (val === task.answer) x.classList.add('correct');
+        });
+
+        const fb = document.createElement('div');
+        fb.className = 'feedback ' + (isRight ? 'ok' : 'bad');
+        fb.textContent = (isRight ? '✅ Правильно! ' : '❌ Неправильно. ') + task.explain;
+        card.appendChild(fb);
+      });
+
+      btns.appendChild(b);
+    });
+
+    card.appendChild(btns);
+    box.appendChild(card);
+  });
+}
+
+
+/* ==================================================================
+   БЛОК 8. ИТОГОВЫЙ ТЕСТ
+   ================================================================== */
+function renderTest(){
+  const box = document.getElementById('test-questions');
+  box.innerHTML = '';
+
+  testQuestions.forEach(function(q, qi){
+    const card = document.createElement('div');
+    card.className = 'test-q';
+
+    const title = document.createElement('p');
+    title.className = 'q-title';
+    title.textContent = (qi + 1) + '. ' + q.q;
+    card.appendChild(title);
+
+    q.options.forEach(function(text, oi){
+      const label = document.createElement('label');
+      label.className = 'opt';
+
+      const input = document.createElement('input');
+      input.type = 'radio';
+      input.name = 'test-q' + qi;
+      input.value = oi;
+
+      const span = document.createElement('span');
+      span.textContent = text;
+
+      label.appendChild(input);
+      label.appendChild(span);
+      card.appendChild(label);
+    });
+
+    box.appendChild(card);
+  });
+}
+
+function checkTest(){
+  const cards = document.querySelectorAll('#test-questions .test-q');
+  let score = 0;
+  let answered = 0;
+
+  cards.forEach(function(card, qi){
+    const q = testQuestions[qi];
+    const labels = card.querySelectorAll('label.opt');
+    const chosen = card.querySelector('input:checked');
+    if (chosen) answered++;
+
+    labels.forEach(function(label, li){
+      const input = label.querySelector('input');
+      input.disabled = true;                       // блокируем изменения
+      label.classList.remove('correct', 'wrong');
+
+      if (li === q.correct) label.classList.add('correct');
+      if (chosen && Number(chosen.value) === li && li !== q.correct){
+        label.classList.add('wrong');
+      }
+    });
+
+    if (chosen && Number(chosen.value) === q.correct) score++;
+  });
+
+  const total = testQuestions.length;
+  const percent = Math.round(score / total * 100);
+
+  let emoji, message;
+  if (percent === 100){ emoji = '🏆'; message = 'Идеально! Ты настоящий Киберщит!'; }
+  else if (percent >= 75){ emoji = '🎉'; message = 'Отличный результат! Ещё чуть-чуть до максимума.'; }
+  else if (percent >= 50){ emoji = '👍'; message = 'Неплохо! Загляни во вкладку «Обучение» и повтори.'; }
+  else { emoji = '📚'; message = 'Стоит ещё раз прочитать теорию и попробовать снова.'; }
+
+  const res = document.getElementById('test-result');
+  res.innerHTML =
+    '<span class="big">' + emoji + ' ' + score + ' из ' + total + '</span>' +
+    'Правильных ответов: <b>' + percent + '%</b><br>' + message +
+    (answered < total ? '<br><small>Ты ответил не на все вопросы (' + answered + ' из ' + total + ').</small>' : '');
+  res.classList.add('show');
+  res.scrollIntoView({ behavior:'smooth', block:'center' });
+}
+
+function resetTest(){
+  // Снять все отметки и разблокировать варианты
+  document.querySelectorAll('#test-questions input').forEach(function(inp){
+    inp.checked = false;
+    inp.disabled = false;
+  });
+  document.querySelectorAll('#test-questions label.opt').forEach(function(label){
+    label.classList.remove('correct', 'wrong');
+  });
+  document.getElementById('test-result').classList.remove('show');
+  window.scrollTo({ top:0, behavior:'smooth' });
+}
+
+
+/* ==================================================================
+   БЛОК 9. ЧЕК-ЛИСТ «МОИ ИТОГИ»
+   ================================================================== */
+const checklistItems = [
+  'У меня длинный пароль, и он разный на разных сайтах',
+  'Я включил(а) двухфакторную аутентификацию',
+  'Я не публикую домашний адрес, номер школы и геолокацию',
+  'Я не перехожу по ссылкам из подозрительных сообщений',
+  'Я никому не сообщаю коды из СМС',
+  'На моём устройстве есть антивирус и включены обновления',
+  'Я знаю, что делать, если меня травят в сети: блокировать и рассказать взрослым',
+  'Я не верю в «бесплатные алмазы» и «выигрыши в лотерею»'
+];
+
+function renderChecklist(){
+  const box = document.getElementById('checklist');
+  box.innerHTML = '';
+
+  checklistItems.forEach(function(text, i){
+    const label = document.createElement('label');
+    label.className = 'check-item';
+
+    const input = document.createElement('input');
+    input.type = 'checkbox';
+
+    const span = document.createElement('span');
+    span.textContent = text;
+
+    input.addEventListener('change', function(){
+      label.classList.toggle('done', input.checked);
+      updateCheckProgress();
+    });
+
+    label.appendChild(input);
+    label.appendChild(span);
+    box.appendChild(label);
+  });
+
+  updateCheckProgress();
+}
+
+function updateCheckProgress(){
+  const all = document.querySelectorAll('#checklist input');
+  const checked = document.querySelectorAll('#checklist input:checked').length;
+  const percent = Math.round(checked / all.length * 100);
+
+  document.getElementById('check-bar').style.width = percent + '%';
+  document.getElementById('check-text').textContent =
+    'Уровень защиты: ' + percent + '%  (' + checked + ' из ' + all.length + ')';
+
+  const advice = document.getElementById('check-advice');
+  if (percent === 100){
+    advice.textContent = '🏆 Твой киберщит максимально крепкий! Расскажи эти правила друзьям.';
+  } else if (percent >= 50){
+    advice.textContent = '💪 Хороший результат! Осталось закрыть ещё пару «дыр» в защите.';
+  } else {
+    advice.textContent = '💡 Начни с простого: длинный пароль и двухфакторная аутентификация.';
+  }
+}
+
+
+/* ==================================================================
+   БЛОК 10. ЗАПУСК ПРИ ЗАГРУЗКЕ СТРАНИЦЫ
+   ================================================================== */
+document.addEventListener('DOMContentLoaded', function(){
+  renderPracticeQuiz();   // упражнение 1
+  renderMatch();          // упражнение 2
+  renderFill();           // упражнение 3
+  renderTF();             // упражнение 4
+  renderTest();           // итоговый тест
+  renderChecklist();      // чек-лист «Итоги»
+});
+</script>
+</body>
+</html>
